@@ -11,11 +11,14 @@ describe('eg credentials list -c ', () => {
     inc (type, isActive) {
       if (isActive) {
         this.active[type] = (this.active[type] || 0) + 1;
+      } else {
+        this.deactivated[type] = (this.deactivated[type] || 0) + 1;
       }
       this.all[type] = (this.all[type] || 0) + 1;
     },
     reset () {
       this.active = {};
+      this.deactivated = {};
       this.all = {};
     }
   };
@@ -24,11 +27,14 @@ describe('eg credentials list -c ', () => {
     add (keyId, isActive) {
       if (isActive) {
         this.active.push(keyId);
+      } else {
+        this.deactivated.push(keyId);
       }
       this.all.push(keyId);
     },
     reset () {
       this.active = [];
+      this.deactivated = [];
       this.all = [];
     }
   };
@@ -117,6 +123,36 @@ describe('eg credentials list -c ', () => {
     });
 
     env.argv = program.parse('credentials list -c ' + username);
+  });
+
+  it('should show all deactivated credentials', done => {
+    const types = {};
+    const keyAuthKeys = [];
+    env.hijack(namespace, generator => {
+      generator.once('run', () => {
+        generator.log.error = message => {
+          done(new Error(message));
+        };
+        generator.stdout = msg => {
+          const crd = JSON.parse(msg);
+          types[crd.type] = (types[crd.type] || 0) + 1;
+          if (crd.type === 'key-auth') {
+            keyAuthKeys.push(crd.keyId);
+          }
+        };
+      });
+
+      generator.once('end', () => {
+        keyAuthKeys.sort();
+        createdKeyAuthKeys.deactivated.sort();
+
+        assert.deepEqual(types, createdTypes.deactivated);
+        assert.deepEqual(keyAuthKeys, createdKeyAuthKeys.deactivated);
+        done();
+      });
+    });
+
+    env.argv = program.parse('credentials list -d -c ' + username);
   });
 
   it('should show all active and deactivated credentials', done => {
