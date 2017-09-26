@@ -12,13 +12,13 @@ describe('eg credentials list -c ', () => {
       if (isActive) {
         this.active[type] = (this.active[type] || 0) + 1;
       } else {
-        this.deactivated[type] = (this.deactivated[type] || 0) + 1;
+        this.archive[type] = (this.archive[type] || 0) + 1;
       }
       this.all[type] = (this.all[type] || 0) + 1;
     },
     reset () {
       this.active = {};
-      this.deactivated = {};
+      this.archive = {};
       this.all = {};
     }
   };
@@ -28,13 +28,13 @@ describe('eg credentials list -c ', () => {
       if (isActive) {
         this.active.push(keyId);
       } else {
-        this.deactivated.push(keyId);
+        this.archive.push(keyId);
       }
       this.all.push(keyId);
     },
     reset () {
       this.active = [];
-      this.deactivated = [];
+      this.archive = [];
       this.all = [];
     }
   };
@@ -125,7 +125,7 @@ describe('eg credentials list -c ', () => {
     env.argv = program.parse('credentials list -c ' + username);
   });
 
-  it('should show all deactivated credentials', done => {
+  it('should show all archive credentials', done => {
     const types = {};
     const keyAuthKeys = [];
     env.hijack(namespace, generator => {
@@ -144,18 +144,18 @@ describe('eg credentials list -c ', () => {
 
       generator.once('end', () => {
         keyAuthKeys.sort();
-        createdKeyAuthKeys.deactivated.sort();
+        createdKeyAuthKeys.archive.sort();
 
-        assert.deepEqual(types, createdTypes.deactivated);
-        assert.deepEqual(keyAuthKeys, createdKeyAuthKeys.deactivated);
+        assert.deepEqual(types, createdTypes.archive);
+        assert.deepEqual(keyAuthKeys, createdKeyAuthKeys.archive);
         done();
       });
     });
 
-    env.argv = program.parse('credentials list -d -c ' + username);
+    env.argv = program.parse('credentials list -i archive -c ' + username);
   });
 
-  it('should show all active and deactivated credentials', done => {
+  it('should show all active and archive credentials', done => {
     const types = {};
     const keyAuthKeys = [];
     env.hijack(namespace, generator => {
@@ -182,6 +182,6 @@ describe('eg credentials list -c ', () => {
       });
     });
 
-    env.argv = program.parse('credentials list -a -c ' + username);
+    env.argv = program.parse('credentials list -i archive,active -c ' + username);
   });
 });
