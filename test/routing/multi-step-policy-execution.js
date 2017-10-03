@@ -1,6 +1,3 @@
-const mock = require('mock-require');
-mock('redis', require('fakeredis'));
-
 const testHelper = require('../common/routing.helper');
 const sinon = require('sinon');
 const assert = require('assert');
@@ -31,7 +28,7 @@ describe('default config with multi step (multi action) policy', () => {
     };
 
     config.gatewayConfig = {
-      http: { port: 9233 },
+      http: { port: 0 },
       apiEndpoints: {
         test_default: {}
       },
