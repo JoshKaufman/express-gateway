@@ -56,7 +56,7 @@
   "types": "./index.d.ts",
   "dependencies": {
     "ajv": "^5.2.3",
-    "bcrypt": "1.0.2",
+    "bcryptjs": "^2.4.3",
     "body-parser": "1.17.2",
     "chalk": "1.1.3",
     "chokidar": "1.7.0",
@@ -73,7 +73,6 @@
     "has-flag": "2.0.0",
     "http-proxy": "1.16.2",
     "js-yaml": "3.8.3",
-    "lodash": "4.17.4",
     "minimatch": "3.0.3",
     "oauth2orize": "1.8.0",
     "parent-require": "^1.0.0",
@@ -127,5 +126,8 @@
   },
   "yargs": {
     "boolean-negation": false
+  },
+  "optionalDependencies": {
+    "bcrypt": "^1.0.3"
   }
 }
