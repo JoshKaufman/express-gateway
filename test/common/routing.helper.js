@@ -2,9 +2,8 @@
 const request = require('supertest');
 const assert = require('chai').assert;
 const logger = require('../../lib/logger').test;
-let gateway = require('../../lib/gateway');
-const _ = require('lodash');
-let config = require('../../lib/config');
+const gateway = require('../../lib/gateway');
+const config = require('../../lib/config');
 let policies = require('../../lib/policies');
 
 module.exports = function () {
@@ -58,7 +57,7 @@ module.exports = function () {
     },
     validateError: (testCase) => {
       return (done) => {
-        let testScenario = prepareScenario(testCase);
+        const testScenario = prepareScenario(testCase);
         testScenario
           .expect(testCase.test.errorCode)
           .expect('Content-Type', /text\/html/)
@@ -70,15 +69,15 @@ module.exports = function () {
     },
     validateOptions: (testCase) => {
       return (done) => {
-        let testScenario = request(app).options(testCase.setup.url);
+        const testScenario = request(app).options(testCase.setup.url);
 
         if (testCase.setup.host) {
           testScenario.set('Host', testCase.setup.host);
         }
         if (testCase.test.headers) {
-          for (let el in testCase.test.headers) {
-            let header = el;
-            let value = testCase.test.headers[el];
+          for (const el in testCase.test.headers) {
+            const header = el;
+            const value = testCase.test.headers[el];
 
             testScenario.expect(header, value);
           }
@@ -91,7 +90,7 @@ module.exports = function () {
     },
     validateSuccess: (testCase) => {
       return (done) => {
-        let testScenario = prepareScenario(testCase);
+        const testScenario = prepareScenario(testCase);
         testScenario
           .expect(200)
           .expect('Content-Type', /json/)
@@ -104,7 +103,7 @@ module.exports = function () {
               assert.equal(res.body.hostname, testCase.test.host);
             }
             if (testCase.test.scopes) {
-              assert.ok(_.isEqual(res.body.apiEndpoint.scopes, testCase.test.scopes));
+              assert.deepEqual(res.body.apiEndpoint.scopes, testCase.test.scopes);
             }
           })
           .end((err, res) => {

@@ -1,24 +1,16 @@
-let mock = require('mock-require');
+const mock = require('mock-require');
 mock('redis', require('fakeredis'));
 
-let should = require('should');
-let _ = require('lodash');
-let services = require('../../lib/services');
-let authCodeService = services.authorizationCode;
-let db = require('../../lib/db')();
+const should = require('should');
+const services = require('../../lib/services');
+const authCodeService = services.authorizationCode;
+const db = require('../../lib/db')();
 
 describe('Authorization Code Tests', function () {
   let newCode, codeFromDb;
 
-  before(function (done) {
-    db.flushdbAsync()
-    .then(function (didSucceed) {
-      if (!didSucceed) {
-        console.log('Failed to flush the database');
-      }
-      done();
-    })
-    .catch(done);
+  before(function () {
+    return db.flushdbAsync();
   });
 
   it('should save a code', function (done) {
@@ -35,7 +27,7 @@ describe('Authorization Code Tests', function () {
       should.exist(code.id);
       code.id.length.should.be.greaterThan(15);
       should.ok(new Date(code.expiresAt) > Date.now());
-      _.omit(code, [ 'id', 'createdAt', 'expiresAt' ]).should.deepEqual(newCode);
+      code.should.have.properties(newCode);
       codeFromDb = code;
       done();
     })
@@ -43,7 +35,7 @@ describe('Authorization Code Tests', function () {
   });
 
   it('should find a code', function (done) {
-    let criteria = Object.assign(newCode, { id: codeFromDb.id });
+    const criteria = Object.assign(newCode, { id: codeFromDb.id });
 
     authCodeService.find(criteria)
     .then((code) => {
@@ -54,7 +46,7 @@ describe('Authorization Code Tests', function () {
   });
 
   it('should not find a code the second time', function (done) {
-    let criteria = Object.assign(newCode, { id: codeFromDb.id });
+    const criteria = Object.assign(newCode, { id: codeFromDb.id });
 
     authCodeService.find(criteria)
     .then((code) => {
